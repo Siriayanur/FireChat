@@ -2,35 +2,55 @@ import 'package:flash_chat/screens/login_screen.dart';
 import 'package:flash_chat/screens/registration_screen.dart';
 import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 
 class WelcomeScreen extends StatefulWidget {
-  static String id="WelcomeScreen";
+  static String id = "WelcomeScreen";
   @override
   _WelcomeScreenState createState() => _WelcomeScreenState();
 }
 
-
 // SingleTickerProviderStateMixin => As only one object is being animated here
 //TickerProviderStateMixin => Used to add multiple animations
-class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProviderStateMixin{
-  AnimationController controller ;
+class _WelcomeScreenState extends State<WelcomeScreen>
+    with SingleTickerProviderStateMixin {
+  AnimationController controller;
+  Animation animation;
 
   @override
   void initState() {
     super.initState();
     controller = AnimationController(
-      duration: Duration(seconds: 1),
-      vsync:this,
+      //how long my animation should exist
+      duration: Duration(seconds: 2),
+
+      //value for the ticker will be provided by this
+      vsync: this,
     );
+
     controller.forward();
+
+    animation = ColorTween(begin: Colors.blueGrey, end: Colors.white)
+        .animate(controller);
+    //From 1.0 * 100 size go in reverse direction --> gets smaller and smaller in size
+    //controller.reverse(from: 1.0);
     controller.addListener(() {
-      print(controller.value);
+      setState(() {});
+      print(animation.value);
     });
   }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: animation.value,
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
@@ -46,11 +66,14 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
                     height: 60.0,
                   ),
                 ),
-                Text(
-                  'Flash Chat',
-                  style: TextStyle(
-                    fontSize: 45.0,
+                TypewriterAnimatedTextKit(
+                  text: ['Flash Chat'],
+                  speed: Duration(seconds: 1),
+
+                  textStyle: TextStyle(
+                    fontSize: 35.0,
                     fontWeight: FontWeight.w900,
+                    color: Colors.black,
                   ),
                 ),
               ],
@@ -67,7 +90,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
                 child: MaterialButton(
                   onPressed: () {
                     //Go to login screen.
-                    Navigator.pushNamed(context,LoginScreen.id);
+                    Navigator.pushNamed(context, LoginScreen.id);
                   },
                   minWidth: 200.0,
                   height: 42.0,
